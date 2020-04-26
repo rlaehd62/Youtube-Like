@@ -40,6 +40,7 @@ const FileUpload = () =>
                     setCate(e.target.value.toUpperCase().replace(" ", "_"))} label="Category" />
                 <TextField type='File' onChange={(e) => setFile(e.currentTarget.files[0])} label="Standard" />
             </form>
+
             <Button variant="contained" onClick={(event =>
             {
                 const formData = new FormData();
@@ -49,10 +50,13 @@ const FileUpload = () =>
                 axios.post("http://localhost:8080/videos/upload/"+cate, formData, { withCredentials: true })
                     .then(() =>
                     {
+
                         history.push("/");
                     })
                     .catch((reason =>
                     {
+                        setTitle('');
+                        setCate('');
                         console.log(reason);
                     }));
             })} color="secondary">업로드</Button>

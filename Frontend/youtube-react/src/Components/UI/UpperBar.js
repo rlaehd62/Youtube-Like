@@ -22,30 +22,15 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-const UpperBar = () =>
+const UpperBar = ({signed, sign_in}) =>
 {
     const classes = useStyles();
-    const [signed, setSigned] = React.useState(false);
     const [admin, setAdmin] = React.useState(false);
 
     useEffect(() =>
     {
-        check();
-    }, []);
-
-    const check = async () =>
-    {
-        axios.get("http://localhost:8080/token/verify", {withCredentials: true})
-            .then(() =>
-            {
-                setSigned(true);
-                check_admin();
-            })
-            .catch(() =>
-            {
-                setSigned(false);
-            });
-    };
+        check_admin();
+    }, [signed]);
 
     const check_admin = async () =>
     {
@@ -58,7 +43,18 @@ const UpperBar = () =>
             {
                 setAdmin(false);
             });
-    }
+    };
+
+    const logout = async (e) =>
+    {
+        axios.delete("http://localhost:8080/token/expires", { withCredentials: true})
+            .then(() =>
+            {
+                sign_in(false);
+            });
+
+        e.preventDefault();
+    };
 
     return (
         <AppBar position="static">
@@ -66,12 +62,19 @@ const UpperBar = () =>
                 <Typography variant="h6" className={classes.title}>Youtube</Typography>
                 {
                     admin ?
-                        <Button size={"large"} to="/upload" component={Link} color="inherit">업로드</Button> : ''
+                        <Button size={"large"} to="/upload" component={Link} color="inherit">업로드</Button>
+                        : ''
+                }
+
+                {
+                    admin ?
+                    <Button size={"large"} to="/manage" component={Link} color="inherit">영상 관리</Button>
+                        : ''
                 }
 
                 {
                     signed ?
-                        <Button size={"large"} to="/logout" component={Link} color="inherit">로그아웃</Button>
+                        <Button size={"large"} onClick={e => logout(e)} to="/" component={Link} color="inherit">로그아웃</Button>
                         :
                         <Button size={"large"} to="/login" component={Link} color="inherit">로그인</Button>
                 }

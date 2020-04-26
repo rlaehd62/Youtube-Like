@@ -93,7 +93,11 @@ public class VideoController
 
         SimpleGrantedAuthority role = new SimpleGrantedAuthority("ROLE_ADMIN");
         String uploader = video.getUploader();
-        if(roles.contains(role) || uploader.equals(username)) videoRepository.delete(video);
+        if(roles.contains(role) || uploader.equals(username))
+        {
+            videoRepository.deleteVideoByUuid(video.getUuid());
+            log.info("Video " + uuid + " has been delete by Administrator.");
+        }
         return "영상 " + uuid + "는 성공적으로 삭제되었습니다.";
     }
 

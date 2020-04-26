@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const Login = (props) =>
+const Login = ({sign_in}) =>
 {
     const classes = useStyles();
     const [id, setID] = React.useState('');
@@ -25,6 +25,9 @@ const Login = (props) =>
             .then(() =>
             {
                 console.log("Login 성공!");
+                setID('');
+                setPW('');
+                sign_in(true);
             });
     };
 
