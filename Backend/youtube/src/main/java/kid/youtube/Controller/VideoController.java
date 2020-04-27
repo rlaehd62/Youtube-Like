@@ -6,6 +6,7 @@ import kid.youtube.Entity.Video;
 import kid.youtube.Repository.CategoryRepository;
 import kid.youtube.Repository.MemberRepository;
 import kid.youtube.Repository.VideoRepository;
+import kid.youtube.Service.AuthService;
 import kid.youtube.Service.TokenService;
 import kid.youtube.Service.YoutubeUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,9 @@ public class VideoController
 
     @Autowired
     private YoutubeUploadService uploadService;
+
+    @Autowired
+    private AuthService authService;
     private Logger log = Logger.getLogger(this.getClass().getName());
 
     @Autowired
@@ -66,6 +70,7 @@ public class VideoController
 
     @Value("${video.location}")
     private String root;
+
 
     @PostMapping("/upload/{category}")
     public ResponseEntity<?> uploadVideo(@CookieValue String AccessToken, @PathVariable String category,  @RequestParam String title, @RequestParam("file") MultipartFile file)
@@ -92,19 +97,17 @@ public class VideoController
         op_video.orElseThrow(() -> new RuntimeException("해당 비디오는 존재하지 않습니다."));
         Video video = op_video.get();
 
-
         String username = tokenService.extractUsername(AccessToken);
         Optional<Member> op_member = memberRepository.findMemberById(username);
         op_member.orElseThrow(() -> new UsernameNotFoundException("계정을 확인할 수 없습니다."));
-        List<SimpleGrantedAuthority> roles = getRoles(op_member.get());
 
-        SimpleGrantedAuthority role = new SimpleGrantedAuthority("ROLE_ADMIN");
         String uploader = video.getUploader();
-        if(roles.contains(role) || uploader.equals(username))
+        if(authService.hasRole(op_member.get(), "ADMIN") && uploader.equals(username))
         {
             videoRepository.deleteVideoByUuid(video.getUuid());
             log.info("Video " + uuid + " has been delete by Administrator.");
         }
+
         return "영상 " + uuid + "는 성공적으로 삭제되었습니다.";
     }
 

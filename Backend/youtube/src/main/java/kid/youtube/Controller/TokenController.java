@@ -3,6 +3,7 @@ package kid.youtube.Controller;
 import kid.youtube.Entity.Member;
 import kid.youtube.Entity.MemberDetails;
 import kid.youtube.Repository.MemberRepository;
+import kid.youtube.Service.AuthService;
 import kid.youtube.Service.MemberDetailsService;
 import kid.youtube.Service.TokenService;
 import kid.youtube.Util.Name;
@@ -49,6 +50,10 @@ public class TokenController
 
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private AuthService authService;
+
     private Logger log = Logger.getLogger(this.getClass().getName());
 
 
@@ -57,8 +62,6 @@ public class TokenController
     {
         Optional<Member> op_member = memberRepository.findMemberById(id);
         op_member.orElseThrow(() -> new UsernameNotFoundException("계정을 확인할 수 없습니다."));
-
-        System.out.println(id + " / " + pw);
 
         Member member = op_member.get();
         if(!member.getPw().equals(pw)) throw new UsernameNotFoundException("비밀번호가 일치하지 않습니다.");
@@ -107,19 +110,9 @@ public class TokenController
         Optional<Member> op_member = memberRepository.findMemberById(id);
         op_member.orElseThrow(() -> new UsernameNotFoundException("계정을 확인할 수 없습니다."));
 
-        List<SimpleGrantedAuthority> roles = getRoles(op_member.get());
-        final String ROLE = "ROLE_" + role.toUpperCase();
-
         log.info("User " + id + " requested to response with their roles.");
-        if(!roles.contains(new SimpleGrantedAuthority(ROLE))) throw new RuntimeException("사용자의 권한이 일치하지 않습니다!");
+        if(!authService.hasRole(op_member.get(), role.toUpperCase())) throw new RuntimeException("사용자의 권한이 일치하지 않습니다!");
         return "Good to Go!";
-    }
-
-    private List<SimpleGrantedAuthority> getRoles(Member member)
-    {
-        return Arrays.stream(member.getRoles().split(","))
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
     }
 
     private Cookie getCookie(String token)
