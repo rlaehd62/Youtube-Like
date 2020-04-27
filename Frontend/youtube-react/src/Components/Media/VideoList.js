@@ -27,12 +27,12 @@ const VideoList = (props) =>
 
     useEffect(() =>
     {
-        loadVides();
-    }, []);
+        loadVides(props.match.params.name);
+    }, [props.match.params.name]);
 
-    const loadVides = async () =>
+    const loadVides = (name) =>
     {
-        if(props.name == 'all')
+        if(props.match.params.name == undefined)
         {
             axios.get("http://localhost:8080/videos/all", { withCredentials: true })
                 .then(res =>
@@ -42,7 +42,7 @@ const VideoList = (props) =>
                 });
         } else
         {
-            axios.get("http://localhost:8080/videos/search?category="+props.name, { withCredentials: true })
+            axios.get("http://localhost:8080/videos/search?category="+name, { withCredentials: true })
                 .then(res =>
                 {
                     const data = res.data;
@@ -54,7 +54,7 @@ const VideoList = (props) =>
     const getVideoCard = (video) =>
     {
         return (
-            <Card className={classes.root}>
+            <Card key={video.uuid} className={classes.root}>
                 <CardActionArea>
                     <CardMedia
                         className={classes.media}

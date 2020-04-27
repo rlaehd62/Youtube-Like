@@ -1,17 +1,29 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {BrowserRouter, Route} from "react-router-dom";
 import BottomNav from "./Components/UI/BottomNav";
 import UpperBar from "./Components/UI/UpperBar";
 import VideoList from "./Components/Media/VideoList";
 import VideoPage from "./Components/Media/VideoPage";
 import Login from "./Components/Account/Login";
-import FileUpload from "./Components/Media/FileUpload";
+import FileUpload from "./Components/Media/Management/FileUpload";
 import axios from "axios";
-import VideoManage from "./Components/Media/VideoManage";
+import VideoManage from "./Components/Media/Management/VideoManage";
+import CategoryManage from "./Components/Media/Management/CategoryManage";
 
 function App() {
 
     const [signed, setSigned] = React.useState(false);
+    const [category, setCategory] = React.useState([]);
+
+    const loadCategory = async () =>
+    {
+        axios.get("http://localhost:8080/categories/list", { withCredentials: true })
+            .then((response) =>
+            {
+                setCategory(response.data);
+            });
+    };
+
     const sign_in = React.useCallback((value) =>
     {
         setSigned(value);
@@ -28,19 +40,21 @@ function App() {
             {
                 setSigned(false);
             });
+
+        loadCategory();
     }, []);
 
   return (
       <BrowserRouter>
         <UpperBar signed={signed} sign_in={sign_in} />
-        <Route exact path="/" render={(props) => <VideoList {...props} name="all" />}/>
+        <Route exact path="/" render={(props) => <VideoList {...props} />} />
+        <Route path="/category/:name" render={(props) => <VideoList {...props} />} />
+        <Route exact path="/manage/category" render={(props) => <CategoryManage {...props} category={category} setCategory={setCategory} /> } />
         <Route exact path="/login" render={(props) => <Login {...props} sign_in={sign_in} />} />
-        <Route exact path="/upload" component={FileUpload} />
-        <Route exact path="/category/Bears" render={(props) => <VideoList {...props} name="WE_BARE_BEARS" />}/>
-        <Route exact path="/category/Ratatouille" render={(props) => <VideoList {...props} name="RATATOUILLE" />}/>
-        <Route exact path="/video/:uuid" component={VideoPage} />
+        <Route exact path="/upload" render={(props) => <FileUpload {...props} category={category} />} />
+        <Route path="/video/:uuid" component={VideoPage} />
         <Route exact path='/manage' component={VideoManage} />
-        <BottomNav />
+        <BottomNav category={category} />
       </BrowserRouter>
   );
 }

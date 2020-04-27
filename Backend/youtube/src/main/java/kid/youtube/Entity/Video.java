@@ -11,7 +11,9 @@ public class Video
 {
     @Id private String uuid;
 
-    @Enumerated(EnumType.STRING) private Category category;
+    @ManyToOne
+    @JoinColumn
+    private Category category;
 
     private String title;
     private String uploader;

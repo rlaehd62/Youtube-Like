@@ -73,6 +73,12 @@ const UpperBar = ({signed, sign_in}) =>
                 }
 
                 {
+                    admin ?
+                        <Button size={"large"} to="/manage/category" component={Link} color="inherit">카테고리 관리</Button>
+                        : ''
+                }
+
+                {
                     signed ?
                         <Button size={"large"} onClick={e => logout(e)} to="/" component={Link} color="inherit">로그아웃</Button>
                         :

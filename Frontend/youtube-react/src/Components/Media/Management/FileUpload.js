@@ -4,6 +4,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import axios from 'axios';
 import Button from "@material-ui/core/Button";
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -12,13 +16,21 @@ const useStyles = makeStyles((theme) => ({
             width: '25ch',
         },
     },
+
+    formControl: {
+        margin: theme.spacing(1),
+        minWidth: 120,
+    },
+    selectEmpty: {
+        marginTop: theme.spacing(2),
+    },
 }));
 
-const FileUpload = () =>
+const FileUpload = ({ category }) =>
 {
     const classes = useStyles();
     const [history] = React.useState(useHistory());
-    const [cate, setCate] = React.useState('');
+    const [selected, select] = React.useState('');
     const [title, setTitle] = React.useState('');
     const [file, setFile] = React.useState([]);
 
@@ -36,8 +48,22 @@ const FileUpload = () =>
         <div align={"Center"}>
             <form className={classes.root} noValidate autoComplete="off">
                 <TextField value={title} onChange={(e) => setTitle(e.target.value)} label="Title" />
-                <TextField value={cate} onChange={(e) =>
-                    setCate(e.target.value.toUpperCase().replace(" ", "_"))} label="Category" />
+                <div>
+                    <FormControl className={classes.formControl}>
+                        <InputLabel id="demo-simple-select-label">Category</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={selected}
+                            onChange={e => {select(e.target.value)}}>
+                            {
+                                category.map((row) => (
+                                    <MenuItem value={row.name}>{row.name}</MenuItem>
+                                ))
+                            }
+                        </Select>
+                    </FormControl>
+                </div>
                 <TextField type='File' onChange={(e) => setFile(e.currentTarget.files[0])} label="Standard" />
             </form>
 
@@ -47,16 +73,14 @@ const FileUpload = () =>
                 formData.append("title", title);
                 formData.append("file", file);
 
-                axios.post("http://localhost:8080/videos/upload/"+cate, formData, { withCredentials: true })
+                axios.post("http://localhost:8080/videos/upload/"+selected, formData, { withCredentials: true })
                     .then(() =>
                     {
-
                         history.push("/");
                     })
                     .catch((reason =>
                     {
                         setTitle('');
-                        setCate('');
                         console.log(reason);
                     }));
             })} color="secondary">업로드</Button>

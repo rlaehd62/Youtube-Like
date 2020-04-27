@@ -3,6 +3,7 @@ package kid.youtube.Controller;
 import kid.youtube.Entity.Category;
 import kid.youtube.Entity.Member;
 import kid.youtube.Entity.Video;
+import kid.youtube.Repository.CategoryRepository;
 import kid.youtube.Repository.MemberRepository;
 import kid.youtube.Repository.VideoRepository;
 import kid.youtube.Service.TokenService;
@@ -17,7 +18,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -61,18 +61,25 @@ public class VideoController
     @Autowired
     private MemberRepository memberRepository;
 
+    @Autowired
+    private CategoryRepository categoryRepository;
+
     @Value("${video.location}")
     private String root;
 
     @PostMapping("/upload/{category}")
-    public ResponseEntity<?> uploadVideo(@CookieValue String AccessToken, @PathVariable Category category,  @RequestParam String title, @RequestParam("file") MultipartFile file)
+    public ResponseEntity<?> uploadVideo(@CookieValue String AccessToken, @PathVariable String category,  @RequestParam String title, @RequestParam("file") MultipartFile file)
     {
         String id = tokenService.extractUsername(AccessToken);
         String name = file.getOriginalFilename();
         if(!name.contains(".mp4")) throw new FileTypeError();
 
+        Optional<Category> op_cate = categoryRepository.findCategoryByName(category);
+        op_cate.orElseThrow(() -> new RuntimeException("Category Doesn't exist"));
+        Category cate = op_cate.get();
+
         String uuid = uploadService.store(file);
-        Video video = new Video(uuid, category, title, id);
+        Video video = new Video(uuid, cate, title, id);
         videoRepository.save(video);
 
         return ResponseEntity.ok(uuid);
@@ -102,9 +109,12 @@ public class VideoController
     }
 
     @GetMapping("/search")
-    public List<Video> getCategory(@RequestParam Category category)
+    public List<Video> getCategory(@RequestParam String category)
     {
-        return videoRepository.findAllByCategory(category);
+        Optional<Category> op_cate = categoryRepository.findCategoryByName(category);
+        op_cate.orElseThrow(() -> new RuntimeException("Category Doesn't exist"));
+        Category cate = op_cate.get();
+        return videoRepository.findAllByCategory_Name(cate.getName());
     }
 
     @GetMapping("/all")

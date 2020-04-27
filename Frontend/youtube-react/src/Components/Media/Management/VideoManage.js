@@ -10,6 +10,7 @@ import Paper from '@material-ui/core/Paper';
 import axios from "axios";
 import {Link, useHistory} from "react-router-dom";
 import Button from "@material-ui/core/Button";
+import TextField from "@material-ui/core/TextField";
 
 const useStyles = makeStyles({
     table: {
@@ -59,7 +60,8 @@ const VideoManage = (signed) =>
 
 
     return (
-        <TableContainer align={"center"} component={Paper}>
+        <div align={'center'}>
+            <TableContainer component={Paper}>
             <Table className={classes.table} aria-label="simple table">
                 <TableHead>
                     <TableRow>
@@ -76,7 +78,7 @@ const VideoManage = (signed) =>
                         data.map((row) => (
                         <TableRow key={row.uuid}>
                             <TableCell component="th" scope="row">
-                                {row.category}
+                                {row.category.name}
                             </TableCell>
                             <TableCell align="center">{row.title}</TableCell>
                             <TableCell align="center">{row.uuid}</TableCell>
@@ -91,6 +93,7 @@ const VideoManage = (signed) =>
                 </TableBody>
             </Table>
         </TableContainer>
+        </div>
     );
 };
 

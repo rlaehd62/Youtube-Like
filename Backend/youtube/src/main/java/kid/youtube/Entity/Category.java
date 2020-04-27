@@ -1,7 +1,18 @@
 package kid.youtube.Entity;
 
-public enum Category
+import lombok.Data;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
+@Data
+public class Category
 {
-    WE_BARE_BEARS,
-    RATATOUILLE
+    @Id private String name;
+    public Category() {}
+    public Category(String name)
+    {
+        setName(name);
+    }
 }

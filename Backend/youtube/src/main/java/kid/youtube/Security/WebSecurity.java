@@ -34,6 +34,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter
         http.csrf().disable().authorizeRequests()
                 .antMatchers("/console").hasRole("ADMIN")
                 .antMatchers("/videos/upload/**").hasRole("ADMIN")
+                .antMatchers("/categories/generate").hasRole("ADMIN")
+                .antMatchers("/categories/delete").hasRole("ADMIN")
                 .antMatchers("/videos/delete/**").authenticated()
                 .antMatchers("/token/expires").authenticated()
                 .anyRequest().permitAll()
