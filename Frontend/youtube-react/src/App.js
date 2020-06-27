@@ -41,6 +41,7 @@ function App() {
                 setSigned(false);
             });
 
+        document.title = "Youtube (Video Streaming)"
         loadCategory();
     }, []);
 

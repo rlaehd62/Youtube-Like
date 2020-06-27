@@ -14,7 +14,7 @@ import Input from "@material-ui/core/Input";
 
 const useStyles = makeStyles({
     table: {
-        maxWidth: 100
+        maxWidth: 300
     },
 });
 

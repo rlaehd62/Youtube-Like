@@ -8,6 +8,7 @@
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/logo.svg" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,7 +35,6 @@
   </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
-    <option name="showExcludedFiles" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
@@ -45,7 +45,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="android.sdk.path" value="$USER_HOME$/AppData/Local/Android/Sdk" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../../기타/SQLite/sqlite-jdbc-3.27.2.1.jar!/" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
@@ -60,6 +60,9 @@
     <property name="ts.external.directory.path" value="C:\Program Files\JetBrains\IntelliJ IDEA 2018.3.1\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\KID\Desktop\Development\Web\youtube-react\src" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\KID\Desktop\Development\Web\youtube-react\src\Components\Media\Management" />
       <recent name="C:\Users\KID\Desktop\Development\Web\youtube-react\src\Components\Media" />
@@ -101,46 +104,47 @@
       <workItem from="1587803027442" duration="3222000" />
       <workItem from="1587908897175" duration="3768000" />
       <workItem from="1587997459525" duration="8944000" />
+      <workItem from="1588008169954" duration="352000" />
+      <workItem from="1593263398830" duration="4129000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="1" />
+    <option name="version" value="2" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
       <map>
         <entry key="MAIN">
           <value>
-            <State>
-              <option name="COLUMN_ORDER" />
-            </State>
+            <State />
           </value>
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
     <state x="627" y="210" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1588003904731">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="627" y="210" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1588003904731" />
-    <state width="1869" height="269" key="GridCell.Tab.0.bottom" timestamp="1588006412511">
+    <state width="1869" height="267" key="GridCell.Tab.0.bottom" timestamp="1593268340187">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1869" height="269" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1588006412511" />
-    <state width="1869" height="269" key="GridCell.Tab.0.center" timestamp="1588006412511">
+    <state width="1869" height="267" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1593268340187" />
+    <state width="1869" height="267" key="GridCell.Tab.0.center" timestamp="1593268340186">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1869" height="269" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1588006412511" />
-    <state width="1869" height="269" key="GridCell.Tab.0.left" timestamp="1588006412511">
+    <state width="1869" height="267" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1593268340186" />
+    <state width="1869" height="267" key="GridCell.Tab.0.left" timestamp="1593268340186">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1869" height="269" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1588006412511" />
-    <state width="1869" height="269" key="GridCell.Tab.0.right" timestamp="1588006412511">
+    <state width="1869" height="267" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1593268340186" />
+    <state width="1869" height="267" key="GridCell.Tab.0.right" timestamp="1593268340186">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1869" height="269" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1588006412511" />
+    <state width="1869" height="267" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1593268340186" />
     <state x="440" y="204" key="IDE.errors.dialog" timestamp="1586097578103">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

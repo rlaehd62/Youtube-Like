@@ -11,23 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/categories")
-@CrossOrigin
-        (
-                origins = "http://localhost:3000",
-                allowCredentials = "true",
-                allowedHeaders = {"Origin", "Content-Type", "X-Auth-Token"},
-                methods =
-                        {
-                                RequestMethod.GET,
-                                RequestMethod.POST,
-                                RequestMethod.PUT,
-                                RequestMethod.DELETE,
-                                RequestMethod.PATCH,
-                                RequestMethod.OPTIONS,
-                                RequestMethod.HEAD,
-                                RequestMethod.TRACE
-                        }
-        )
 public class CategoryController
 {
     @Autowired
@@ -53,14 +36,16 @@ public class CategoryController
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteCategory(@RequestParam String category)
     {
-        boolean EXISTS  = categoryRepository.existsCategoryByName(category);
-        if(EXISTS)
+        boolean VALID  = categoryRepository.existsCategoryByName(category) &&
+                videoRepository.findAllByCategory_Name(category).isEmpty();
+
+        if(VALID)
         {
             categoryRepository.deleteCategoryByName(category);
             return ResponseEntity.ok("Accepted!");
         }
 
-        throw new RuntimeException("Category Doesn't Exists!");
+        throw new RuntimeException("Sorry, Couldn't Remove The Category.");
     }
 
     @GetMapping("/list")

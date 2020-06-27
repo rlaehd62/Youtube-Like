@@ -22,7 +22,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-const UpperBar = ({signed, sign_in}) =>
+const UpperBar = ({signed, sign_in, isAdmin}) =>
 {
     const classes = useStyles();
     const [admin, setAdmin] = React.useState(false);

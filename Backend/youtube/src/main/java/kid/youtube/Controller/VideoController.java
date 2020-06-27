@@ -29,23 +29,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/videos")
-@CrossOrigin
-        (
-                origins = "http://localhost:3000",
-                allowCredentials = "true",
-                allowedHeaders = {"Origin", "Content-Type", "X-Auth-Token"},
-                methods =
-                        {
-                                RequestMethod.GET,
-                                RequestMethod.POST,
-                                RequestMethod.PUT,
-                                RequestMethod.DELETE,
-                                RequestMethod.PATCH,
-                                RequestMethod.OPTIONS,
-                                RequestMethod.HEAD,
-                                RequestMethod.TRACE
-                        }
-        )
 public class VideoController
 {
 
