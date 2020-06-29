@@ -50,7 +50,7 @@ public class VideoController
     {
         String id = tokenService.extractUsername(AccessToken);
         String name = file.getOriginalFilename();
-        if(Objects.nonNull(name) && (!name.contains(".mp4") || !name.contains(".mp3"))) throw new FileTypeError();
+        if(Objects.isNull(name) || !name.contains(".mp4") || !name.contains(".mp3")) throw new FileTypeError();
 
         Optional<Category> op_cate = categoryRepository.findCategoryByName(category);
         op_cate.orElseThrow(() -> new RuntimeException("Category Doesn't exist"));
