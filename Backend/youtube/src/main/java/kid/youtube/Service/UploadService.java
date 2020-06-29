@@ -19,7 +19,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 @Service
-public class YoutubeUploadService
+public class UploadService
 {
     @Value("${video.location}")
     private String root;
@@ -124,6 +124,20 @@ public class YoutubeUploadService
         {
             throw new StorageFileNotFoundException("Could not read file: " + filename, e);
         }
+    }
+
+    public void delete(String uuid)
+    {
+        try
+        {
+            String file1 = uuid+".mp4";
+            String file2 = uuid+".jpg";
+
+            Path rootPath = Paths.get(root.replace("~", System.getProperty("user.home")));
+            Files.deleteIfExists(rootPath.resolve(file1));
+            Files.deleteIfExists(rootPath.resolve(file2));
+        } catch (Exception e)
+        { e.printStackTrace(); }
     }
 
     private class StorageException extends RuntimeException

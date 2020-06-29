@@ -8,13 +8,13 @@ import kid.youtube.Repository.MemberRepository;
 import kid.youtube.Repository.VideoRepository;
 import kid.youtube.Service.AuthService;
 import kid.youtube.Service.TokenService;
-import kid.youtube.Service.YoutubeUploadService;
+import kid.youtube.Service.UploadService;
+import kid.youtube.Service.UtilityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.support.ResourceRegion;
 import org.springframework.http.*;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,28 +31,18 @@ import java.util.stream.Collectors;
 @RequestMapping("/videos")
 public class VideoController
 {
-
-    @Autowired
-    private YoutubeUploadService uploadService;
-
-    @Autowired
-    private AuthService authService;
     private Logger log = Logger.getLogger(this.getClass().getName());
 
-    @Autowired
-    private TokenService tokenService;
+    @Autowired private UploadService uploadService;
+    @Autowired private AuthService authService;
+    @Autowired private TokenService tokenService;
+    @Autowired private UtilityService utilityService;
 
-    @Autowired
-    private VideoRepository videoRepository;
+    @Autowired private VideoRepository videoRepository;
+    @Autowired private MemberRepository memberRepository;
+    @Autowired private CategoryRepository categoryRepository;
 
-    @Autowired
-    private MemberRepository memberRepository;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Value("${video.location}")
-    private String root;
+    @Value("${video.location}") private String root;
 
 
     @PostMapping("/upload/{category}")
@@ -60,7 +50,7 @@ public class VideoController
     {
         String id = tokenService.extractUsername(AccessToken);
         String name = file.getOriginalFilename();
-        if(!name.contains(".mp4")) throw new FileTypeError();
+        if(Objects.nonNull(name) && (!name.contains(".mp4") || !name.contains(".mp3"))) throw new FileTypeError();
 
         Optional<Category> op_cate = categoryRepository.findCategoryByName(category);
         op_cate.orElseThrow(() -> new RuntimeException("Category Doesn't exist"));
@@ -76,17 +66,18 @@ public class VideoController
     @DeleteMapping("/delete/{uuid}")
     public String deleteVideo(@CookieValue String AccessToken, @PathVariable String uuid)
     {
-        Optional<Video> op_video = videoRepository.findById(uuid);
-        op_video.orElseThrow(() -> new RuntimeException("해당 비디오는 존재하지 않습니다."));
-        Video video = op_video.get();
+        Optional<Video> optionalVideo = videoRepository.findById(uuid);
+        optionalVideo.orElseThrow(() -> new RuntimeException("해당 비디오는 존재하지 않습니다."));
+        Video video = optionalVideo.get();
 
         String username = tokenService.extractUsername(AccessToken);
-        Optional<Member> op_member = memberRepository.findMemberById(username);
-        op_member.orElseThrow(() -> new UsernameNotFoundException("계정을 확인할 수 없습니다."));
+        Optional<Member> optionalMember = memberRepository.findMemberById(username);
+        optionalMember.orElseThrow(() -> new UsernameNotFoundException("계정을 확인할 수 없습니다."));
 
         String uploader = video.getUploader();
-        if(authService.hasRole(op_member.get(), "ADMIN") && uploader.equals(username))
+        if(authService.hasRole(optionalMember.get(), "ADMIN") && uploader.equals(username))
         {
+            uploadService.delete(video.getUuid());
             videoRepository.deleteVideoByUuid(video.getUuid());
             log.info("Video " + uuid + " has been delete by Administrator.");
         }
@@ -97,9 +88,10 @@ public class VideoController
     @GetMapping("/search")
     public List<Video> getCategory(@RequestParam String category)
     {
-        Optional<Category> op_cate = categoryRepository.findCategoryByName(category);
-        op_cate.orElseThrow(() -> new RuntimeException("Category Doesn't exist"));
-        Category cate = op_cate.get();
+        Optional<Category> optionalCategory = categoryRepository.findCategoryByName(category);
+        optionalCategory.orElseThrow(() -> new RuntimeException("Category Doesn't exist"));
+
+        Category cate = optionalCategory.get();
         return videoRepository.findAllByCategory_Name(cate.getName());
     }
 
@@ -131,36 +123,11 @@ public class VideoController
     @GetMapping("/streaming/{name}")
     public ResponseEntity<ResourceRegion> getVideo(@PathVariable String name, @RequestHeader HttpHeaders headers) throws IOException
     {
+        if(!videoRepository.existsById(name)) throw new RuntimeException("해당 비디오는 존재하지 않습니다.");
         String videoLocation = root.replace("~", System.getProperty("user.home")) + name;
         UrlResource video = new UrlResource("file:" + videoLocation);
-        ResourceRegion region = resourceRegion(video, headers);
+        ResourceRegion region = utilityService.resourceRegion(video, headers);
         return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).contentType(MediaTypeFactory.getMediaType(video).orElse(MediaType.APPLICATION_OCTET_STREAM)).body(region);
-    }
-
-    private List<SimpleGrantedAuthority> getRoles(Member member)
-    {
-        return Arrays.stream(member.getRoles().split(","))
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
-    }
-
-    private ResourceRegion resourceRegion(UrlResource video, HttpHeaders headers) throws IOException
-    {
-        final long chunkSize = 500000L;
-        long contentLength = video.contentLength();
-        HttpRange httpRange = headers.getRange().stream().findFirst().get();
-
-        if(httpRange != null)
-        {
-            long start = httpRange.getRangeStart(contentLength);
-            long end = httpRange.getRangeEnd(contentLength);
-            long rangeLength = Long.min(chunkSize, end - start + 1);
-            return new ResourceRegion(video, start, rangeLength);
-        } else
-        {
-            long rangeLength = Long.min(chunkSize, contentLength);
-            return new ResourceRegion(video, 0, rangeLength);
-        }
     }
 
     private class FileTypeError extends RuntimeException

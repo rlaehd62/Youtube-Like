@@ -1,18 +1,12 @@
 package kid.youtube.Controller;
 
 import kid.youtube.Entity.Member;
-import kid.youtube.Entity.MemberDetails;
 import kid.youtube.Repository.MemberRepository;
 import kid.youtube.Service.AuthService;
-import kid.youtube.Service.MemberDetailsService;
 import kid.youtube.Service.TokenService;
-import kid.youtube.Util.Name;
+import kid.youtube.Service.UtilityService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Optionals;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/token")
@@ -29,16 +22,13 @@ import java.util.stream.Collectors;
 public class TokenController
 {
 
-    @Autowired
-    private MemberRepository memberRepository;
-
-    @Autowired
-    private TokenService tokenService;
-
-    @Autowired
-    private AuthService authService;
-
     private Logger log = Logger.getLogger(this.getClass().getName());
+    @Autowired private MemberRepository memberRepository;
+
+    @Autowired private TokenService tokenService;
+    @Autowired private AuthService authService;
+    @Autowired private UtilityService utilityService;
+
 
 
     @GetMapping ("/generate")
@@ -51,7 +41,7 @@ public class TokenController
         if(!member.getPw().equals(pw)) throw new UsernameNotFoundException("비밀번호가 일치하지 않습니다.");
 
         String token = tokenService.createToken(id);
-        response.addCookie(getCookie(token));
+        response.addCookie(utilityService.getCookie(token));
         return ResponseEntity.ok(token);
     }
 
@@ -62,7 +52,7 @@ public class TokenController
     @DeleteMapping ("/expires")
     public ResponseEntity<?> expiresToken(HttpServletResponse response)
     {
-        Cookie cookie = getCookie(null);
+        Cookie cookie = utilityService.getCookie(null);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
         log.info("Server has expired Token Cookie!");
@@ -76,7 +66,7 @@ public class TokenController
     @GetMapping ("/verify")
     public String verifyToken(HttpServletRequest request)
     {
-        String token = findToken(request);
+        String token = utilityService.findToken(request);
         log.info("Token " + token + " Detected!");
         return "Your Token has been Verified!";
     }
@@ -89,7 +79,7 @@ public class TokenController
     @GetMapping ("/verify/{role}")
     public String verifyRole(HttpServletRequest request, @PathVariable String role)
     {
-        String AccessToken = findToken(request);
+        String AccessToken = utilityService.findToken(request);
         String id = tokenService.extractUsername(AccessToken);
         Optional<Member> op_member = memberRepository.findMemberById(id);
         op_member.orElseThrow(() -> new UsernameNotFoundException("계정을 확인할 수 없습니다."));
@@ -97,52 +87,5 @@ public class TokenController
         log.info("User " + id + " requested to response with their roles.");
         if(!authService.hasRole(op_member.get(), role.toUpperCase())) throw new RuntimeException("사용자의 권한이 일치하지 않습니다!");
         return "Good to Go!";
-    }
-
-    private Cookie getCookie(String token)
-    {
-        Cookie cookie = new Cookie(Name.TOKEN, token);
-        cookie.setMaxAge(60 * 60 * 24);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        return cookie;
-    }
-
-    private String findToken(HttpServletRequest request)
-    {
-        if(hasToken(request, false))
-        {
-            String token = request.getHeader(Name.TOKEN);
-            Optional<String> op = Optional.of(token);
-
-            op.orElseThrow(RuntimeException::new);
-            return op.get();
-        }
-        else if(hasToken(request, true))
-        {
-            Optional<Cookie> op =
-                    Arrays.stream(request.getCookies())
-                            .filter(cookie -> cookie.getName().equals(Name.TOKEN))
-                            .findAny();
-
-            op.orElseThrow(RuntimeException::new);
-            return op.get().getValue();
-        }
-
-        throw new RuntimeException("Nope!");
-    }
-
-    private boolean hasToken(HttpServletRequest request, boolean cookie_mode)
-    {
-        if(!cookie_mode)
-        {
-            String token = request.getHeader(Name.TOKEN);
-            return Objects.nonNull(token);
-        }
-
-        if(Objects.isNull(request.getCookies())) return false;
-        return Arrays.stream(request.getCookies())
-                .map(Cookie::getName)
-                .anyMatch(name -> name.equals(Name.TOKEN));
     }
 }

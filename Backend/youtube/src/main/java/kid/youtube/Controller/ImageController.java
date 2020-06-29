@@ -1,10 +1,8 @@
 package kid.youtube.Controller;
 
-import kid.youtube.Service.YoutubeUploadService;
+import kid.youtube.Service.UploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.core.io.support.ResourceRegion;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,7 +15,7 @@ import java.util.logging.Logger;
 public class ImageController
 {
     @Autowired
-    private YoutubeUploadService uploadService;
+    private UploadService uploadService;
     private Logger log = Logger.getLogger(this.getClass().getName());
 
     @PostMapping("/upload")
