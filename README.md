@@ -4,9 +4,16 @@
 - 개인 사용이 목적이었기에 트래픽에 대응하거나, 효율적인 구조는 없다.
 
 # 본론
-- Streaming : MP4로 진행 (그러나 이후 프로젝트는 HLS 기반으로 진행하였다.)
-- Thunbnail : 업로드 된 영상을 직접 캡처하여 Thunbnail을 생성하는 기능은 상당히 재밌었다.
-- Others : 간단한 스트리밍 제공을 위한 기능들 (이 프로젝트는 반응형 웹 조차도 넣지 않았다.)
+- Streaming : 업로드 된 영상에 대한 스트리밍 기능을 제공한다 (당시에는 HLS를 알지 못하여, 단순 스트리밍으로 구현하였다)
+- Thunbnail : 영상의 중간을 캡처하여 자동으로 Thumbnail을 제공하는 기능
+- Video CRUD : 업로드 된 영상에 대한 관리 기능을 제공한다.
+- SignUp/SignIn : JWT 기반의 로그인/로그아웃 기능을 제공한다.
+
+## 예시
+> 혹여나 문제가 될 수 있기 때문에 스트리밍 부분은 첨가하지 않았다.
+![1](https://github.com/user-attachments/assets/b06c0a2c-426c-465b-9176-f1b794055650)
+![2](https://github.com/user-attachments/assets/7e31ffb8-c4ec-4eef-86a1-ec55b590a68b)
+
 
 # 결론
 옛날엔 내 작업물이 부끄러워서 공개하지 않았으나, 나이를 먹으며 크게 게의치 않게 됐다. <br>
