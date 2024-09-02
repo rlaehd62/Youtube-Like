@@ -50,7 +50,7 @@ public class VideoController
     {
         String id = tokenService.extractUsername(AccessToken);
         String name = file.getOriginalFilename();
-        if(Objects.isNull(name) || !name.contains(".mp4") || !name.contains(".mp3")) throw new FileTypeError();
+        if(Objects.isNull(name) || !utilityService.isType(name, "mp4", "mpeg")) throw new FileTypeError();
 
         Optional<Category> op_cate = categoryRepository.findCategoryByName(category);
         op_cate.orElseThrow(() -> new RuntimeException("Category Doesn't exist"));
@@ -123,7 +123,6 @@ public class VideoController
     @GetMapping("/streaming/{name}")
     public ResponseEntity<ResourceRegion> getVideo(@PathVariable String name, @RequestHeader HttpHeaders headers) throws IOException
     {
-        if(!videoRepository.existsById(name)) throw new RuntimeException("해당 비디오는 존재하지 않습니다.");
         String videoLocation = root.replace("~", System.getProperty("user.home")) + name;
         UrlResource video = new UrlResource("file:" + videoLocation);
         ResourceRegion region = utilityService.resourceRegion(video, headers);

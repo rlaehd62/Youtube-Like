@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
@@ -66,6 +68,18 @@ public class UtilityService
         }
 
         throw new RuntimeException("Nope!");
+    }
+
+    public boolean isType(String file, String... types)
+    {
+        try
+        {
+            String result = Files.probeContentType(Paths.get(file));
+            for(String type : types) if(result.contains(type)) return true;
+        } catch (Exception e)
+        { e.printStackTrace(); }
+
+        return false;
     }
 
     public boolean hasToken(HttpServletRequest request, boolean cookie_mode)
